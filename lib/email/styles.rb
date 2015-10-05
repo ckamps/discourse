@@ -28,6 +28,18 @@ module Email
     def format_basic
       uri = URI(Discourse.base_url)
 
+      std_font = "font-family:'lucida grande',tahoma,verdana,arial,sans-serif"
+      elements = [
+        'div',
+        'p',
+        'h2',
+        'h3',
+        'h4'
+      ]
+      elements.each do |element|
+        style(element, std_font)
+      end
+
       # images
       @fragment.css('img').each do |img|
 
