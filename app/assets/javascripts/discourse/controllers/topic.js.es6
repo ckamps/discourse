@@ -15,7 +15,7 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
   selectedPosts: null,
   selectedReplies: null,
   queryParams: ['filter', 'username_filters', 'show_deleted'],
-  loadedAllPosts: false,
+  loadedAllPosts: Em.computed.or('model.postStream.loadedAllPosts', 'model.postStream.loadingLastPost'),
   enteredAt: null,
   firstPostExpanded: false,
   retrying: false,
@@ -35,22 +35,6 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       this.send('refreshTitle');
     }
   }.observes('model.title', 'category'),
-
-  postStreamLoadedAllPostsChanged: function() {
-    // semantics of loaded all posts are slightly diff at topic level,
-    // it just means that we "once" loaded all posts, this means we don't
-    // keep re-rendering the suggested topics when new posts zoom in
-    let loaded = this.get('model.postStream.loadedAllPosts');
-
-    if (loaded) {
-      this.set('model.loadedTopicId', this.get('model.id'));
-    } else {
-      loaded = this.get('model.loadedTopicId') === this.get('model.id');
-    }
-
-    this.set('loadedAllPosts', loaded);
-
-  }.observes('model.postStream', 'model.postStream.loadedAllPosts'),
 
   @computed('model.postStream.summary')
   show_deleted: {
@@ -169,7 +153,7 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
       if (user.get('staff') && replyCount > 0) {
         bootbox.dialog(I18n.t("post.controls.delete_replies.confirm", {count: replyCount}), [
           {label: I18n.t("cancel"),
-           'class': 'btn-danger rightg'},
+           'class': 'btn-danger right'},
           {label: I18n.t("post.controls.delete_replies.no_value"),
             callback() {
               post.destroy(user);
@@ -390,10 +374,11 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
 
     togglePinnedForUser() {
       if (this.get('model.pinned_at')) {
-        if (this.get('pinned')) {
-          this.get('content').clearPin();
+        const topic = this.get('content');
+        if (topic.get('pinned')) {
+          topic.clearPin();
         } else {
-          this.get('content').rePin();
+          topic.rePin();
         }
       }
     },
@@ -458,6 +443,11 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
 
     unhidePost(post) {
       post.unhide();
+    },
+
+    changePostOwner(post) {
+      this.get('selectedPosts').addObject(post);
+      this.send('changeOwner');
     }
   },
 
@@ -594,7 +584,9 @@ export default Ember.Controller.extend(SelectedPostsCount, BufferedContent, {
         }
         case "created": {
           postStream.triggerNewPostInStream(data.id);
-          Discourse.notifyBackgroundCountIncrement();
+          if (self.get('currentUser.id') !== data.user_id) {
+            Discourse.notifyBackgroundCountIncrement();
+          }
           return;
         }
         default: {

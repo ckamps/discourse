@@ -284,8 +284,6 @@ fi:
       [trust]: https://meta.discourse.org/t/what-do-user-trust-levels-do/4924
   category:
     topic_prefix: "Alueesta %{category}"
-    replace_paragraph: "[Korvaa tämä kappale lyhyellä kuvauksella uudesta alueesta. Tämä kuvaus näytetään alueen valinnan yhteydessä, joten yritä pitää se alle 200 merkin pituisenä. Tätä aluetta ei näytetä listauksissa ennen kuin olet muokannut tätä tekstiä tai luonut viestiketjuja.]"
-    post_template: "%{replace_paragraph}\n\nKäytä seuraavat kappaleet pidempään kuvaukseen ja selvittääksesi alueen säännöt ja ohjeet.\n\nJotain huomioitavia asioita alle muodostuvaa keskustelua ajatellen:\n\n- Mitä varten tämä alue on? Miksi ihmiset valitsisivat tämän alueen viestiketjulleen?\n\n- Kuinka se eroaa muista alueista?\n\n- Tarvitaanko tätä aluetta?\n\n- Pitäisikö alue yhdistää toisen alueen kanssa, tai jakaa useammaksi alueeksi?\n"
     errors:
       uncategorized_parent: "Alueettomia ei voi asettaa toisen alueen alle"
       self_parent: "Alue ei voi olla itsensä ylempi alue."
@@ -313,6 +311,16 @@ fi:
   rate_limiter:
     slow_down: "Olet tehnyt tämän toiminnon liian monta kertaa, yritä uudelleen myöhemmin."
     too_many_requests: "Sille, kuinka useasti tämä toiminto voidaan suorittaa on määritelty päivittäinen raja. Odota %{time_left} ennen uudelleen kokeilemista."
+    by_type:
+      first_day_replies_per_day: "Olet lähettänyt enimmäismäärän viestejä, jonka uusi käyttäjä saa lähettää ensimmäisenä päivänään. Odota %{time_left}, ennen kuin yrität uudelleen."
+      first_day_topics_per_day: "Olet luonut enimmäismäärän ketjuja, jonka uusi käyttäjä saa lähettää ensimmäisenä päivänään. Odota %{time_left}, ennen kuin yrität uudelleen."
+      create_topic: "Yrität luoda ketjuja liian nopeasti. Odota %{time_left}, ennen kuin yrität uudelleen."
+      create_post: "Yrität vastata liian nopeasti. Odota %{time_left}, ennen kuin yrität uudelleen."
+      topics_per_day: "Olet luonut enimmäismäärän uusia ketjuja tälle päivälle. Odota %{time_left}, ennen kuin yrität uudelleen."
+      pms_per_day: "Olet lähettänyt enimmäismäärän viestejä tälle päivälle. Odota %{time_left}, ennen kuin yrität uudelleen."
+      create_like: "Olet tykännyt enimmäismäärän tälle päivälle. Odota %{time_left}, ennen kuin yrität uudelleen."
+      create_bookmark: "Olet lisännyt enimmäismäärän kirjanmerkkejä tälle päivälle. Odota %{time_left}, ennen kuin yrität uudelleen."
+      edit_post: "Olet saavuttanut muokkausten enimmäismäärän tälle päivälle. Odota %{time_left}, ennen kuin yrität uudelleen."
     hours:
       one: "1 tunti"
       other: "%{count} tuntia"
@@ -744,7 +752,6 @@ fi:
     summary_likes_required: "Montako tykkäystä ketjussa pitää olla, jotta ketjun tiivistelmä otetaan käyttöön"
     summary_percent_filter: "Kun käyttäjä klikkaa 'Näytä ketjun tiivistelmä', näytä paras % viesteistä"
     summary_max_results: "Maksimimäärä viestejä, jotka näytetään ketjun tiivistelmässä"
-    enable_private_messages: "Salli luottamustason 1 käyttäjien luoda ja vastata viesteihin"
     enable_long_polling: "Ilmoitusten käyttämä viestiväylä voi käyttää long pollingia"
     long_polling_base_url: "Base URL, jota käytetään long pollingissa (kun CDN on käytössä, varmista että tähän on asetettu origin pull) esim: http://origin.site.com"
     long_polling_interval: "Kuinka kauan palvelimen pitäisi odottaa ennen vastaamista asiakkaalle, kun ei ole mitään dataa jota lähettää (vain kirjautuneille käyttäjille)"
@@ -763,7 +770,6 @@ fi:
     notify_mods_when_user_blocked: "Jos käyttäjä estetään automaattisesti, lähetä viesti kaikille valvojille."
     flag_sockpuppets: "Jos uusi käyttäjä vastaa toisen uuden käyttäjän luomaan ketjun samasta IP osoitteesta, liputa molemmat viestit mahdolliseksi roskapostiksi."
     traditional_markdown_linebreaks: "Käytä perinteisiä rivinvaihtoja Markdownissa, joka vaatii kaksi perättäistä välilyöntiä rivin vaihtoon."
-    allow_html_tables: "Salli taulukoiden syöttäminen Markdowniin käyttäen HTML tageja, TABLE, THEAD, TD, TR, TH on valkolistattu (edellyttää kaikkien taulukoita sisältävien vanhojen viestien uudelleen rakentamisen)"
     post_undo_action_window_mins: "Kuinka monta minuuttia käyttäjällä on aikaa perua viestiin kohdistuva toimi (tykkäys, liputus, etc)."
     must_approve_users: "Henkilökunnan täytyy hyväksyä kaikki uudet tilit, ennen uusien käyttäjien päästämistä sivustolle. VAROITUS: tämän asetuksen valitseminen poistaa pääsyn kaikilta jo olemassa olevilta henkilökuntaan kuulumattomilta käyttäjiltä."
     ga_tracking_code: "Google analytics (ga.js) seurantakoodi, esim.: UA-12345678-9; katso http://google.com/analytics"
@@ -794,6 +800,7 @@ fi:
     email_token_valid_hours: "Unohtuneen salasanan / tilin vahvistamisen tokenit ovat voimassa (n) tuntia."
     email_token_grace_period_hours: "Unohtuneen salasanan / tilin vahvistamisen tokenit ovat vielä voimassa (n) tuntia käyttämisen jälkeen."
     enable_badges: "Ota käyttöön arvomerkkijärjestelmä"
+    enable_whispers: "Salli henkilökunnan keskustella yksityisestä ketjun sisällä. (kokeellinen)"
     allow_index_in_robots_txt: "Määrittele robots.txt-tiedostossa, että hakukoneet saavat luetteloida sivuston."
     email_domains_blacklist: "Pystyviivalla eroteltu lista sähköposti-verkkotunnuksista, joista käyttäjät eivät voi luoda tiliä. Esimerkiksi mailinator.com|trashmail.net"
     email_domains_whitelist: "Pystyviivalla eroteltu lista sähköposti-verkkotunnuksista, joista käyttäjien pitää luoda tilinsä. VAROITUS: Käyttäjiä, joiden sähköpostiosoite on muusta verkkotunnuksesta ei sallita!"
@@ -1890,10 +1897,10 @@ fi:
       <ul>
       <li>Otsikon vastaavuutta priorisoidaan &ndash; jos olet epävarma, etsi otsikkoa</li>
       <li>Uniikit, harvinaiset sanat tuottavat parhaan lopputuloksen</li>
-      <li>Kokeile etsimistä tietyn alueen, ketjun tai käyttäjän viesteistä/li>
+      <li>Kokeile etsimistä tietyn alueen, ketjun tai käyttäjän viesteistä</li>
       </ul>
       </p>
-      <h3>Vaihtoehdot/h3>
+      <h3>Vaihtoehdot</h3>
       <p>
       <table>
       <tr><td><code>order:views</code></td><td><code>order:latest</code></td><td><code>order:likes</code><td></td><td colspan=2></td></tr>
@@ -1905,7 +1912,7 @@ fi:
       </table>
       </p>
       <p>
-      <code>sateenkaaria category:puistot status:open order:latest</code> hakee ketjuja, joissa käytetään sanaa "sateenkaaria" alueella "puistot" ja joita ei ole suljettu tai arkistoitu järjestettynä ketjun viimeisimmän viestin päivämäärän mukaan. </p>
+      <code>sateenkaaria category:puistot status:open order:latest</code> palauttaa ketjut, joissa käytetään sanaa "sateenkaaria" alueella "puistot" ja joita ei ole suljettu tai arkistoitu, järjestettynä ketjun viimeisimmän viestin päivämäärän mukaan. </p>
   admin_login:
     success: "Sähköposti lähetetty"
     error: "Virhe!"

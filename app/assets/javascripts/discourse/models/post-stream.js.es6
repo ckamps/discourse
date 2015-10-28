@@ -445,8 +445,7 @@ const PostStream = RestModel.extend({
     const url = "/posts/" + postId;
     const store = this.store;
 
-    return Discourse.ajax(url).then((p) =>
-        this.storePost(store.createRecord('post', p)));
+    return Discourse.ajax(url).then(p => this.storePost(store.createRecord('post', p)));
   },
 
   /**
@@ -464,7 +463,12 @@ const PostStream = RestModel.extend({
 
     if (this.get('stream').indexOf(postId) === -1) {
       this.get('stream').addObject(postId);
-      if (loadedAllPosts) { this.appendMore(); }
+      if (loadedAllPosts) {
+        this.set('loadingLastPost', true);
+        this.appendMore().finally(
+            ()=>this.set('loadingLastPost', true)
+        );
+      }
     }
   },
 

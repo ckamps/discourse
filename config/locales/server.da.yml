@@ -246,8 +246,6 @@ da:
     title: "Velkommen i loungen"
   category:
     topic_prefix: "Kategoridefinition for %{category}"
-    replace_paragraph: "[Erstat det første afsnit med en kort beskrivelse af din nye kategori. Denne tekst vises i området til valg af kategori, så prøv at holde den på under 200 tegn. Indtil du redigerer denne tekst eller opretter emner vil denne kategori ikke optræde på kategorisiden.]"
-    post_template: "%{replace_paragraph}\n\nBrug de følgende afsnit til en længere beskrivelse samt til at fastlægge retningslinjer eller regler for kategorien.\n\nNogle ting som du kan overveje i svarene nedenfor:\n\n- Hvad er kategorien beregnet til? Hvorfor skal folk vælge denne kategori til deres emne?\n\n- Hvordan er den anderledes end de andre kategorier vi allerede har?\n\n- Har vi behov for denne kategori?\n\n- Skal vi kombinere denne kategori med en anden kategori eller dele den op i flere kategorier?\n"
     errors:
       uncategorized_parent: "Ukategoriserede  kan ikke have en overordnede kategori"
       self_parent: "En underkategori kan ikke være sin egen overordnede kategori."
@@ -537,20 +535,27 @@ da:
     page_view_anon_reqs:
       title: "Anonym"
       xaxis: "Dag"
-      yaxis: "Anonym API Forespørgsler"
+      yaxis: "Anonyme API-Forespørgsler"
     page_view_logged_in_reqs:
       title: "Logget ind"
       xaxis: "Dag"
+      yaxis: "Indloggede API-forespørgsler"
     page_view_crawler_reqs:
       title: "Web Crawlers"
       xaxis: "Dag"
+      yaxis: "Web Crawler API-forespørgsler"
     page_view_total_reqs:
       title: "Total"
       xaxis: "Dag"
+      yaxis: "Totale API-forespørgsler"
     page_view_logged_in_mobile_reqs:
+      title: "Indloggede API-forespørgsler"
       xaxis: "Dag"
+      yaxis: "Mobile indloggede API-forespørgsler"
     page_view_anon_mobile_reqs:
+      title: "Anonyme API-forespørgsler"
       xaxis: "Dag"
+      yaxis: "Mobile anonyme API-forepørgsler"
     http_background_reqs:
       title: "Baggrund"
       xaxis: "Dag"
@@ -678,6 +683,21 @@ da:
     enable_mobile_theme: "Mobile enheder bruger et mobilvenligt tema, med mulighed for at skifte til det fulde site. Deaktivér dette hvis du ønsker at anvende et brugerdefineret stylesheet som er fuldstændigt responsivt."
     short_progress_text_threshold: "Når antallet af indlæg overstiger dette tal viser statuslinjen kun det aktuelle indlægsnummer. Hvis du ændrer bredden af statuslinjen kan det være nødvendigt at opdatere denne værdi."
     default_code_lang: "Standard syntax highlighting som bruges i GitHub kodeblokke (lang-auto, ruby, python etc.)."
+    default_email_digest_frequency: "Hvor ofte brugerne som standard modtager e-mail-sammendrag. "
+    default_email_private_messages: "Send som standard en email når nogen sender brugeren en besked."
+    default_email_direct: "Send som standard en email når nogen citerer/svarer/nævner/inviterer brugeren."
+    default_email_mailing_list_mode: "Send som standard en email for hvert nyt indlæg."
+    default_email_always: "Send som standard en email-notifikation selv hvis brugeren er aktiv."
+    default_other_new_topic_duration_minutes: "Global standardkriterium for hvornår et emne regnes for nyt."
+    default_other_auto_track_topics_after_msecs: "Globalt standardtidsrum før et emne automatisk spores. "
+    default_other_external_links_in_new_tab: "Åbn som standard links på et nyt faneblad."
+    default_other_enable_quoting: "Slå som standard \"svar på den markerede tekst\" til."
+    default_other_dynamic_favicon: "Vis som standard nyt / opdateret emnetal på browserikon"
+    default_other_disable_jump_reply: "Spring ikke som standard til det nye indlæg efter brugeren har svaret"
+    default_other_edit_history_public: "Offentliggør som standard rettelser til indlæg."
+    default_categories_watching: "Liste over kategorier der som standard overvåges."
+    default_categories_tracking: "Liste over kategorier der som standard følges."
+    default_categories_muted: "Liste over kategorier der som standard ignoreres."
   notification_types:
     mentioned: "%{display_username} nævnte dig i %{link}"
     liked: "%{display_username} synes om dit indlæg i %{link}"

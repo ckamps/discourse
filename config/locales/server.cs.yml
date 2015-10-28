@@ -225,8 +225,6 @@ cs:
     title: "Vítejte v Redakci"
   category:
     topic_prefix: "Definice kategorie pro %{category}"
-    replace_paragraph: "[Nahraďte tento první odstavec krátkých popisem nové kategorie. Zkuste se vejít do 200 znaků.]"
-    post_template: "%{replace_paragraph}\\\n\\\nPoužijte toto místo níže pro delší popis a stanovení pravidel diskuze!\n"
     errors:
       uncategorized_parent: "„Bez kategorie“ nemůže mít nadřazenou kategorii"
       self_parent: "Nadřazená kategorie nemůže zároveň být podkategorie"
@@ -251,7 +249,6 @@ cs:
     elder:
       title: "vůdce"
   rate_limiter:
-    slow_down: "Provedli jste tuhle akci moooockrát, zkuste to později"
     too_many_requests: "Děláte tuto akci příliš často. Prosím počkejte %{time_left} a zkuste to znovu."
     hours:
       one: "1 hodina"

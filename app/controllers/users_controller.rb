@@ -162,11 +162,15 @@ class UsersController < ApplicationController
   end
 
   def my_redirect
-    if current_user.present? && params[:path] =~ /^[a-z\-\/]+$/
-      redirect_to path("/users/#{current_user.username}/#{params[:path]}")
-      return
+
+    raise Discourse::NotFound if params[:path] !~ /^[a-z\-\/]+$/
+
+    if current_user.blank?
+      cookies[:destination_url] = "/my/#{params[:path]}"
+      redirect_to "/login-preferences"
+    else
+      redirect_to(path("/users/#{current_user.username}/#{params[:path]}"))
     end
-    raise Discourse::NotFound
   end
 
   def invited
@@ -494,8 +498,10 @@ class UsersController < ApplicationController
   end
 
   def send_activation_email
-    RateLimiter.new(nil, "activate-hr-#{request.remote_ip}", 30, 1.hour).performed!
-    RateLimiter.new(nil, "activate-min-#{request.remote_ip}", 6, 1.minute).performed!
+    if current_user.blank? || !current_user.staff?
+      RateLimiter.new(nil, "activate-hr-#{request.remote_ip}", 30, 1.hour).performed!
+      RateLimiter.new(nil, "activate-min-#{request.remote_ip}", 6, 1.minute).performed!
+    end
 
     @user = User.find_by_username_or_email(params[:username].to_s)
 

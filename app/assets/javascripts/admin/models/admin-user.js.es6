@@ -228,7 +228,7 @@ const AdminUser = Discourse.User.extend({
       type: 'POST',
       data: { username_or_email: this.get('username') }
     }).then(function() {
-      document.location = Discourse.getURL("/");
+      document.location = Discourse.BaseUri;
     }).catch(function(e) {
       if (e.status === 404) {
         bootbox.alert(I18n.t('admin.impersonate.not_found'));
@@ -288,10 +288,7 @@ const AdminUser = Discourse.User.extend({
       data: { username: this.get('username') }
     }).then(function() {
       bootbox.alert( I18n.t('admin.user.activation_email_sent') );
-    }).catch(function(e) {
-      var error = I18n.t('admin.user.send_activation_email_failed', { error: "http: " + e.status + " - " + e.body });
-      bootbox.alert(error);
-    });
+    }).catch(popupAjaxError);
   },
 
   anonymizeForbidden: Em.computed.not("can_be_anonymized"),
