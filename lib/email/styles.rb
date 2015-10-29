@@ -30,8 +30,10 @@ module Email
       uri = URI(Discourse.base_url)
 
       std_font = "font-family:'lucida grande',tahoma,verdana,arial,sans-serif".freeze
-      %w(div p h2 h3 h4).each do { |element| style(element, std_font) }
-
+      %w(div p h2 h3 h4).each do |element|
+        style(element, std_font)
+      end
+      
       # images
       @fragment.css('img').each do |img|
 
