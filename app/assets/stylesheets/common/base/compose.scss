@@ -38,10 +38,27 @@
   }
 }
 
-.textarea-wrapper .spinner {
-  z-index: 1000;
-  margin-top: 5em;
+#reply-control {
+  .d-editor-textarea-wrapper .spinner {
+    z-index: 1000;
+    margin-top: 5em;
+  }
+
+  .d-editor-button-bar {
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+
+    margin: 0px;
+    padding: 5px;
+    border-bottom: 2px solid dark-light-diff($primary, $secondary, 90%, -60%);
+    height: 33px;
+  }
+
+  textarea {
+    box-shadow: none;
+  }
 }
+
 
 .saving-text .spinner {
   display: inline-block;
@@ -97,10 +114,6 @@ div.ac-wrap {
     padding: 0;
     box-shadow: none;
   }
-}
-
-#reply-control.topic #wmd-quote-post {
-  display: none;
 }
 
 .auto-close-fields {
@@ -175,7 +188,7 @@ div.ac-wrap {
 
 // this removes the topmost margin from the first element in the topic post
 // if we don't do this, all posts would have extra space at the top
-.wmd-preview > *:first-child {
+.d-editor-preview > *:first-child {
   margin-top: 0;
 }
 .cooked > *:first-child {

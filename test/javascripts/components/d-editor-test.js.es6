@@ -1,4 +1,5 @@
 import componentTest from 'helpers/component-test';
+import { onToolbarCreate } from 'discourse/components/d-editor';
 
 moduleForComponent('d-editor', {integration: true});
 
@@ -7,13 +8,10 @@ componentTest('preview updates with markdown', {
 
   test(assert) {
     assert.ok(this.$('.d-editor-button-bar').length);
-    assert.equal(this.$('.d-editor-preview.hidden').length, 1);
-
     fillIn('.d-editor-input', 'hello **world**');
 
     andThen(() => {
       assert.equal(this.get('value'), 'hello **world**');
-      assert.equal(this.$('.d-editor-preview.hidden').length, 0);
       assert.equal(this.$('.d-editor-preview').html().trim(), '<p>hello <strong>world</strong></p>');
     });
   }
@@ -45,6 +43,12 @@ componentTest('updating the value refreshes the preview', {
   }
 });
 
+function jumpEnd(textarea) {
+  textarea.selectionStart = textarea.value.length;
+  textarea.selectionEnd = textarea.value.length;
+  return textarea;
+}
+
 function testCase(title, testFunc) {
   componentTest(title, {
     template: '{{d-editor value=value}}',
@@ -52,13 +56,14 @@ function testCase(title, testFunc) {
       this.set('value', 'hello world.');
     },
     test(assert) {
-      const textarea = this.$('textarea.d-editor-input')[0];
+      const textarea = jumpEnd(this.$('textarea.d-editor-input')[0]);
       testFunc.call(this, assert, textarea);
     }
   });
 }
 
 testCase(`bold button with no selection`, function(assert, textarea) {
+  console.log(textarea.selectionStart);
   click(`button.bold`);
   andThen(() => {
     const example = I18n.t(`composer.bold_text`);
@@ -205,7 +210,7 @@ componentTest('code button', {
   },
 
   test(assert) {
-    const textarea = this.$('textarea.d-editor-input')[0];
+    const textarea = jumpEnd(this.$('textarea.d-editor-input')[0]);
 
     click('button.code');
     andThen(() => {
@@ -405,11 +410,25 @@ testCase(`heading button with no selection`, function(assert, textarea) {
     assert.equal(textarea.selectionEnd, 17 + example.length);
   });
 
+  textarea.selectionStart = 30;
+  textarea.selectionEnd = 30;
   click(`button.heading`);
   andThen(() => {
     assert.equal(this.get('value'), `hello world.\n\n${example}`);
     assert.equal(textarea.selectionStart, 14);
     assert.equal(textarea.selectionEnd, 14 + example.length);
+  });
+});
+
+testCase(`rule between things`, function(assert, textarea) {
+  textarea.selectionStart = 5;
+  textarea.selectionEnd = 5;
+
+  click(`button.rule`);
+  andThen(() => {
+    assert.equal(this.get('value'), `hello\n\n----------\n world.`);
+    assert.equal(textarea.selectionStart, 18);
+    assert.equal(textarea.selectionEnd, 18);
   });
 });
 
@@ -441,21 +460,35 @@ testCase(`rule with a selection`, function(assert, textarea) {
   });
 });
 
-testCase(`emoji`, function(assert) {
-  assert.equal($('.emoji-modal').length, 0);
+componentTest('emoji', {
+  template: '{{d-editor value=value}}',
+  setup() {
+    // Test adding a custom button
+    onToolbarCreate(toolbar => {
+      toolbar.addButton({
+        id: 'emoji',
+        group: 'extras',
+        icon: 'smile-o',
+        action: 'emoji'
+      });
+    });
+    this.set('value', 'hello world.');
+  },
+  test(assert) {
+    assert.equal($('.emoji-modal').length, 0);
 
-  click('button.emoji');
-  andThen(() => {
-    assert.equal($('.emoji-modal').length, 1);
-  });
+    jumpEnd(this.$('textarea.d-editor-input')[0]);
+    click('button.emoji');
+    andThen(() => {
+      assert.equal($('.emoji-modal').length, 1);
+    });
 
-  click('a[data-group-id=0]');
-  click('a[title=grinning]');
+    click('a[data-group-id=0]');
+    click('a[title=grinning]');
 
-  andThen(() => {
-    assert.ok($('.emoji-modal').length === 0);
-    assert.equal(this.get('value'), 'hello world.:grinning:');
-  });
+    andThen(() => {
+      assert.ok($('.emoji-modal').length === 0);
+      assert.equal(this.get('value'), 'hello world.:grinning:');
+    });
+  }
 });
-
-

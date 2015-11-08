@@ -1,9 +1,12 @@
 <td>
-  <div class='creator pull-left'>
-    <a href="{{content.lastPostUrl}}">{{avatar topic.creator imageSize="large"}}</a>
+  {{~#unless content.hasExcerpt}}
+  <div class='pull-left'>
+    <a href="{{content.lastPostUrl}}">{{avatar content.lastPoster imageSize="large"}}</a>
   </div>
-
   <div class='right'>
+  {{else}}
+  <div>
+  {{/unless~}}
     <div class='main-link'>
       {{raw "topic-status" topic=content}}
       {{topic-link content}}

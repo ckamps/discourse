@@ -213,6 +213,14 @@ td.flaggers td {
     display: inline-block;
     margin-right: 5px;
   }
+  #last-seen {
+    float: none;
+  }
+  .ac-wrap {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0;
+  }
 }
 
 .paste-users {
@@ -245,7 +253,7 @@ td.flaggers td {
   position: relative;
   // The admin-nav becomes a slide-out menu at the mobile-nav breakpoint
   @media (max-width: $mobile-breakpoint) {
-    position: absolute;
+    position: static;
     z-index: 0;
     width: 50%;
   }
@@ -1180,7 +1188,7 @@ table.api-keys {
     height: 200px;
   }
 
-  .wmd-input {
+  .d-editor-input {
     width: 98%;
     height: 200px;
   }

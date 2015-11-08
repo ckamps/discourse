@@ -8,7 +8,20 @@ const Topic = RestModel.extend({
   message: null,
   errorLoading: false,
 
-  creator: Ember.computed.alias("posters.firstObject.user"),
+  @computed('posters.firstObject')
+  creator(poster){
+    return poster && poster.user;
+  },
+
+  @computed('posters.@each')
+  lastPoster(posters) {
+    if (posters && posters.length > 0) {
+      const latest = posters.filter(p => p.extras && p.extras.indexOf("latest") >= 0)[0];
+      return latest.user;
+    } else {
+      return this.get("creator");
+    }
+  },
 
   @computed('fancy_title')
   fancyTitle(title) {

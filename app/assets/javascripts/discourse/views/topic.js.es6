@@ -94,7 +94,6 @@ const TopicView = Ember.View.extend(AddCategoryClass, AddArchetypeClass, Scrolli
 
   // The user has scrolled the window, or it is finished rendering and ready for processing.
   scrolled() {
-
     if (this.isDestroyed || this.isDestroying || this._state !== 'inDOM') {
       return;
     }
