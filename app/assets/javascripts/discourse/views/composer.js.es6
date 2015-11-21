@@ -4,7 +4,7 @@ import { headerHeight } from 'discourse/views/header';
 import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import Composer from 'discourse/models/composer';
 
-const ComposerView = Ember.View.extend(Ember.Evented, {
+const ComposerView = Ember.View.extend({
   _lastKeyTimeout: null,
   elementId: 'reply-control',
   classNameBindings: ['composer.creatingPrivateMessage:private-message',
@@ -21,13 +21,10 @@ const ComposerView = Ember.View.extend(Ember.Evented, {
     return composeState || Composer.CLOSED;
   },
 
-  movePanels() {
+  movePanels(sizePx) {
 
-    // Do we need these anymore? causes issues on iPad. Reply sometimes does not
-    // show composer due to bottom padding.
-
-    // $('#main-outlet').css('padding-bottom', sizePx);
-    // $('.composer-popup').css('bottom', sizePx);
+    $('#main-outlet').css('padding-bottom', sizePx);
+    $('.composer-popup').css('bottom', sizePx);
 
     // signal the progress bar it should move!
     this.appEvents.trigger("composer:resized");

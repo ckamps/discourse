@@ -1,6 +1,6 @@
 /*global Mousetrap:true */
 import loadScript from 'discourse/lib/load-script';
-import { default as computed, on } from 'ember-addons/ember-computed-decorators';
+import { default as computed, on, observes } from 'ember-addons/ember-computed-decorators';
 import { showSelector } from "discourse/lib/emoji/emoji-toolbar";
 
 // Our head can be a static string or a function that returns a string
@@ -119,15 +119,23 @@ Toolbar.prototype.addButton = function(button) {
   if (button.shortcut) {
     const mac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     const mod = mac ? 'Meta' : 'Ctrl';
-    createdButton.title = `${title} (${mod}+${button.shortcut})`;
+    var shortcutTitle = `${mod}+${button.shortcut}`;
 
     // Mac users are used to glyphs for shortcut keys
     if (mac) {
-      createdButton.title = createdButton.title.replace('Shift', "\u21E7")
-                                               .replace('Meta', "\u2318")
-                                               .replace('Alt', "\u2325")
-                                               .replace(/\+/g, '');
+      shortcutTitle = shortcutTitle
+          .replace('Shift', "\u21E7")
+          .replace('Meta', "\u2318")
+          .replace('Alt', "\u2325")
+          .replace(/\+/g, '');
+    } else {
+      shortcutTitle = shortcutTitle
+          .replace('Shift', I18n.t('shortcut_modifier_key.shift'))
+          .replace('Ctrl', I18n.t('shortcut_modifier_key.ctrl'))
+          .replace('Alt', I18n.t('shortcut_modifier_key.alt'));
     }
+
+    createdButton.title = `${title} (${shortcutTitle})`;
 
     this.shortcuts[`${mod}+${button.shortcut}`.toLowerCase()] = createdButton;
   } else {
@@ -151,6 +159,7 @@ export default Ember.Component.extend({
   insertLinkHidden: true,
   link: '',
   lastSel: null,
+  _mouseTrap: null,
 
   @computed('placeholder')
   placeholderTranslated(placeholder) {
@@ -164,11 +173,14 @@ export default Ember.Component.extend({
 
     loadScript('defer/html-sanitizer-bundle').then(() => this.set('ready', true));
 
+    const mouseTrap = Mousetrap(this.$('.d-editor-input')[0]);
+
     const shortcuts = this.get('toolbar.shortcuts');
     Ember.keys(shortcuts).forEach(sc => {
       const button = shortcuts[sc];
-      Mousetrap(this.$('.d-editor-input')[0]).bind(sc, () => {
+      mouseTrap.bind(sc, () => {
         this.send(button.action, button);
+        return false;
       });
     });
 
@@ -181,15 +193,16 @@ export default Ember.Component.extend({
     this.appEvents.on('composer:insert-text', text => {
       this._addText(this._getSelected(), text);
     });
+
+    this._mouseTrap = mouseTrap;
   },
 
   @on('willDestroyElement')
   _shutDown() {
     this.appEvents.off('composer:insert-text');
 
-    Ember.keys(this.get('toolbar.shortcuts')).forEach(sc => {
-      Mousetrap(this.$('.d-editor-input')[0]).unbind(sc);
-    });
+    const mouseTrap = this._mouseTrap;
+    Ember.keys(this.get('toolbar.shortcuts')).forEach(sc => mouseTrap.unbind(sc));
     this.$('.d-editor-preview').off('click.preview');
   },
 
@@ -201,14 +214,14 @@ export default Ember.Component.extend({
     return toolbar;
   },
 
-  @computed('ready', 'value')
-  preview(ready, value) {
-    if (!ready) { return; }
+  _updatePreview() {
+    if (this._state !== "inDOM") { return; }
 
+    const value = this.get('value');
     const markdownOptions = this.get('markdownOptions') || {};
     markdownOptions.sanitize = true;
 
-    const text = Discourse.Dialect.cook(value || "", markdownOptions);
+    this.set('preview', Discourse.Dialect.cook(value || "", markdownOptions));
     Ember.run.scheduleOnce('afterRender', () => {
       if (this._state !== "inDOM") { return; }
       const $preview = this.$('.d-editor-preview');
@@ -216,8 +229,12 @@ export default Ember.Component.extend({
 
       this.sendAction('previewUpdated', $preview);
     });
+  },
 
-    return text ? text : "";
+  @observes('ready', 'value')
+  _watchForChanges() {
+    if (!this.get('ready')) { return; }
+    Ember.run.debounce(this, this._updatePreview, 30);
   },
 
   _applyEmojiAutocomplete() {
@@ -238,7 +255,7 @@ export default Ember.Component.extend({
           showSelector({
             appendTo: self.$(),
             container,
-            onSelect: title => self._addText(this._getSelected(), `${title}:`)
+            onSelect: title => self._addText(self._getSelected(), `${title}:`)
           });
           return "";
         }
@@ -289,7 +306,6 @@ export default Ember.Component.extend({
   _selectText(from, length) {
     Ember.run.scheduleOnce('afterRender', () => {
       const textarea = this.$('textarea.d-editor-input')[0];
-      textarea.focus();
       textarea.selectionStart = from;
       textarea.selectionEnd = textarea.selectionStart + length;
     });
@@ -370,6 +386,7 @@ export default Ember.Component.extend({
     const insert = `${sel.pre}${text}`;
     this.set('value', `${insert}${sel.post}`);
     this._selectText(insert.length, 0);
+    Ember.run.once("afterRender", () => { $("textarea.d-editor-input").focus(); } );
   },
 
   actions: {
@@ -396,15 +413,22 @@ export default Ember.Component.extend({
 
     insertLink() {
       const link = this.get('link');
+      const sel = this._lastSel;
 
       if (Ember.isEmpty(link)) { return; }
       const m = / "([^"]+)"/.exec(link);
       if (m && m.length === 2) {
         const description = m[1];
         const remaining = link.replace(m[0], '');
-        this._addText(this._lastSel, `[${description}](${remaining})`);
+        this._addText(sel, `[${description}](${remaining})`);
       } else {
-        this._addText(this._lastSel, `[${link}](${link})`);
+        if (sel.value) {
+          this._addText(sel, `[${sel.value}](${link})`);
+        } else {
+          const desc = I18n.t('composer.link_description');
+          this._addText(sel, `[${desc}](${link})`);
+          this._selectText(sel.start + 1, desc.length);
+        }
       }
 
       this.set('link', '');

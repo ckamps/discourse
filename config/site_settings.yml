@@ -271,6 +271,9 @@ login:
     type: list
   forgot_password_strict: false
   log_out_strict: true
+  pending_users_reminder_delay:
+    min: -1
+    default: 8
 
 users:
   min_username_length:
@@ -375,7 +378,9 @@ posting:
   max_topic_title_length:
     client: true
     default: 255
+    max: 255
   title_min_entropy: 10
+  allow_uppercase_posts: false
   title_prettify: true
   title_fancy_entities: true
   min_private_message_title_length:
@@ -593,9 +598,9 @@ files:
     client: true
     shadowed_by_global: true
   external_system_avatars_url:
-    default: "https://avatars.discourse.org/v2/letter/{first_letter}/{color}/{size}.png"
+    default: "/letter_avatar_proxy/v2/letter/{first_letter}/{color}/{size}.png"
     client: true
-    regex: '^https?:\/\/.+[^\/]'
+    regex: '^((https?:)?\/)?\/.+[^\/]'
   default_opengraph_image_url: ''
 
 trust:
@@ -849,6 +854,10 @@ backups:
     default: ''
     regex: "^[^A-Z_.]+$" # can't use '.' when using HTTPS
     shadowed_by_global: true
+  backup_time_of_day:
+    default: '3:30'
+    regex: "^((0?(0|1|2|3|4|5|6|7|8|9)|(10|11|12|13|14|15|16|17|18|19|20|21|22|23))):\\d\\d$"
+  backup_with_uploads: true
 
 uncategorized:
   version_checks:
@@ -1026,6 +1035,10 @@ user_preferences:
   default_other_dynamic_favicon: false
   default_other_disable_jump_reply: false
   default_other_edit_history_public: false
+
+  default_topics_automatic_unpin:
+    default: true
+    client: true
 
   default_categories_watching:
     type: category_list

@@ -63,7 +63,6 @@ function testCase(title, testFunc) {
 }
 
 testCase(`bold button with no selection`, function(assert, textarea) {
-  console.log(textarea.selectionStart);
   click(`button.bold`);
   andThen(() => {
     const example = I18n.t(`composer.bold_text`);
@@ -183,13 +182,29 @@ testCase('link modal (cancel)', function(assert) {
   });
 });
 
-testCase('link modal (simple link)', function(assert) {
+testCase('link modal (simple link)', function(assert, textarea) {
+  click('button.link');
+  fillIn('.insert-link input', 'http://eviltrout.com');
+  click('.insert-link button.btn-primary');
+  const desc = I18n.t('composer.link_description');
+  andThen(() => {
+    assert.equal(this.$('.insert-link.hidden').length, 1);
+    assert.equal(this.get('value'), `hello world.[${desc}](http://eviltrout.com)`);
+    assert.equal(textarea.selectionStart, 13);
+    assert.equal(textarea.selectionEnd, 13 + desc.length);
+  });
+});
+
+testCase('link modal (simple link) with selected text', function(assert, textarea) {
+  textarea.selectionStart = 0;
+  textarea.selectionEnd = 12;
+
   click('button.link');
   fillIn('.insert-link input', 'http://eviltrout.com');
   click('.insert-link button.btn-primary');
   andThen(() => {
     assert.equal(this.$('.insert-link.hidden').length, 1);
-    assert.equal(this.get('value'), 'hello world.[http://eviltrout.com](http://eviltrout.com)');
+    assert.equal(this.get('value'), '[hello world.](http://eviltrout.com)');
   });
 });
 

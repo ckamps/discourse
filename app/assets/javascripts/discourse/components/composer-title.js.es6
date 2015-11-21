@@ -4,8 +4,8 @@ export default Ember.Component.extend({
   classNames: ['title-input'],
 
   @on('didInsertElement')
-  _focusOnReply() {
-    if (!Discourse.Mobile.mobileView) {
+  _focusOnTitle() {
+    if (!this.capabilities.touch) {
       this.$('input').putCursorAtEnd();
     }
   },

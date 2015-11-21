@@ -56,8 +56,10 @@ export default Ember.Component.extend({
       transformComplete: v => v.username || v.usernames.join(", @")
     });
 
+    $input.on('scroll', () => Ember.run.throttle(this, this._syncEditorAndPreviewScroll, 20));
+
     // Focus on the body unless we have a title
-    if (!this.get('composer.canEditTitle') && !Discourse.Mobile.mobileView) {
+    if (!this.get('composer.canEditTitle') && !this.capabilities.touch) {
       this.$('.d-editor-input').putCursorAtEnd();
     }
 
@@ -86,10 +88,32 @@ export default Ember.Component.extend({
     }
   },
 
+  _syncEditorAndPreviewScroll() {
+    const $input = this.$('.d-editor-input');
+    const $preview = this.$('.d-editor-preview');
+
+    if ($input.scrollTop() === 0) {
+      $preview.scrollTop(0);
+      return;
+    }
+
+    const inputHeight = $input[0].scrollHeight;
+    const previewHeight = $preview[0].scrollHeight;
+    if (($input.height() + $input.scrollTop() + 100) > inputHeight) {
+      // cheat, special case for bottom
+      $preview.scrollTop(previewHeight);
+      return;
+    }
+
+    const scrollPosition = $input.scrollTop();
+    const factor = previewHeight / inputHeight;
+    const desired = scrollPosition * factor;
+    $preview.scrollTop(desired + 50);
+  },
+
   _renderUnseen: function($preview, unseen) {
     fetchUnseenMentions($preview, unseen, this.siteSettings).then(() => {
       linkSeenMentions($preview, this.siteSettings);
-      this.trigger('previewRefreshed', $preview);
     });
   },
 
@@ -101,7 +125,7 @@ export default Ember.Component.extend({
   _bindUploadTarget() {
     this._unbindUploadTarget(); // in case it's still bound, let's clean it up first
 
-    const $element = this.$();;
+    const $element = this.$();
     const csrf = this.session.get('csrfToken');
     const uploadPlaceholder = this.get('uploadPlaceholder');
 
@@ -349,6 +373,7 @@ export default Ember.Component.extend({
 
       // Paint oneboxes
       $('a.onebox', $preview).each((i, e) => Discourse.Onebox.load(e, refresh));
+      this.trigger('previewRefreshed', $preview);
     },
   }
 });
